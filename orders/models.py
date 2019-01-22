@@ -118,19 +118,142 @@ class Subs(models.Model):
     )
     sort = models.CharField(max_length=64,choices=SUBS_SORT)
     size = models.CharField(max_length=64,choices=SUBS_SIZE)
-    steak_adds = models.CharField(max_length=64,choices=STEAK_ADDS)
+    steak_adds = models.CharField(max_length=64,choices=STEAK_ADDS, blank=True)
     extra_cheese = models.BooleanField(default=False)
     price = models.FloatField(default=0, blank=True)
+
+    def save(self, *args, **kwargs):
+        # calculate price for Subs  
+        if self.sort in ('Cheese' , 'Italian' , 'Ham + Cheese' , 'Meatball' , 'Tuna' , 'Eggplant Parmigiana'):
+            self.price = 6.50
+            if self.size == 'Large':
+                self.price = 7.95
+        elif self.sort in ('Turkey' , 'Chicken Parmigiana'):
+            self.price = 7.50
+            if self.size == 'Large':
+                self.price = 8.50
+        elif self.sort == 'Sausage, Peppers & Onions':
+            self.price = 8.50 
+        elif self.sort == 'Hamburger':
+            self.price = 4.60
+            if self.size == 'Large':
+                self.price = 6.95
+        elif self.sort == 'Cheeseburger':
+            self.price = 5.10
+            if self.size == 'Large':
+                self.price = 7.45
+        elif self.sort in ('Fried Chicken' , 'Veggie'):
+            self.price = 6.95
+            if self.size == 'Large':
+                self.price = 8.50
+        elif self.sort == 'Steak':
+            self.price = 6.50
+            if self.size == 'Large':
+                self.price = 7.95
+        elif self.sort == 'Steak + Cheese':
+            self.price = 6.95
+            if self.size == 'Large':
+                self.price = 8.50
+
+        super().save(*args, **kwargs)
+
+        if self.sort in ('Steak' , 'Steak + Cheese'):
+            if self.steak_adds in ('Mushrooms' , 'Green Peppers' , 'Onions'):
+                self.price += 0.5  
+
+        super().save(*args, **kwargs) 
+
+        if self.extra_cheese == True:
+            self.price += 0.50   
+
+        super().save(*args, **kwargs) 
 
     def __str__(self):
         return f"{self.sort} ({self.size}) {self.price}$"
 
+class Pasta(models.Model):    
+    PASTA_SORT = (
+        ('Baked Ziti w/Mozzarella','Baked Ziti w/Mozzarella'),
+        ('Baked Ziti w/Meatballs','Baked Ziti w/Meatballs'),
+        ('Baked Ziti w/Chicken','Baked Ziti w/Chicken'),
+    )
+    sort = models.CharField(max_length=64,choices=PASTA_SORT)
+    price = models.FloatField(default=0, blank=True)
+
+    def save(self, *args, **kwargs):
+        # calculate price for Subs  
+        if self.sort == 'Baked Ziti w/Mozzarella':
+            self.price = 6.50
+        elif self.sort == 'Baked Ziti w/Meatballs':
+            self.price = 8.75
+        elif self.sort == 'Baked Ziti w/Chicken':
+            self.price = 9.75
+        super().save(*args, **kwargs) 
+
+    def __str__(self):
+        return f"{self.sort} {self.price}$"
+
+class Salads (models.Model):    
+    SALADS_SORT = (
+        ('Garden Salad','Garden Salad'),
+        ('Greek Salad','Greek Salad'),
+        ('Antipasto','Antipasto'),
+        ('Salad w/Tuna','Salad w/Tuna'),
+    )
+    sort = models.CharField(max_length=64,choices=SALADS_SORT)
+    price = models.FloatField(default=0, blank=True)
+
+    def save(self, *args, **kwargs):
+        # calculate price for Subs  
+        if self.sort == 'Garden Salad':
+            self.price = 6.25
+        elif self.sort in ('Greek Salad', 'Antipasto', 'Salad w/Tuna'):
+            self.price = 8.25
+        super().save(*args, **kwargs) 
+
+    def __str__(self):
+        return f"{self.sort} {self.price}$"
+
+class Dinner_Platters (models.Model):    
+    DINNER_SORT = (
+        ('Garden Salad','Garden Salad'),
+        ('Greek Salad','Greek Salad'),
+        ('Antipasto','Antipasto'),
+        ('Baked Ziti','Baked Ziti'),
+        ('Meatball Parm','Meatball Parm'),
+        ('Chicken Parm','Chicken Parm'),
+    )
+    DINNER_SIZE = (
+        ('Small','Small'),
+        ('Large','Large'),
+    )
+    sort = models.CharField(max_length=64,choices=DINNER_SORT)
+    size = models.CharField(max_length=64,choices=DINNER_SIZE)
+    price = models.FloatField(default=0, blank=True)
+
+    def save(self, *args, **kwargs):
+        # calculate price for Subs  
+        if self.sort == 'Garden Salad':
+            self.price = 35.0
+            if self.size == 'Large':
+                self.price = 60.0
+        elif self.sort in ('Greek Salad', 'Antipasto', 'Meatball Parm'):
+            self.price = 45.0
+            if self.size == 'Large':
+                self.price = 70.0 
+        elif self.sort == 'Baked Ziti':
+            self.price = 35.0
+            if self.size == 'Large':
+                self.price = 70.0 
+        elif self.sort == 'Chicken Parm':
+            self.price = 45.0
+            if self.size == 'Large':
+                self.price = 80.0 
+        super().save(*args, **kwargs) 
+
+    def __str__(self):
+        return f"{self.sort} ({self.size}) {self.price}$"
 ''' To do models:
-Subs
-    sort
-    steak_adds
-    extra_cheese
-    price
 
 Pasta
     sort
