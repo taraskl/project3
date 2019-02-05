@@ -15,15 +15,17 @@
 
     <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        First name:<br>
+        Username:<br>
         <input type="text" name="username" ><br>
-        Last name:<br>
-        <input type="text" name="password" ><br>
+        Password:<br>
+        <input type="password" name="password" ><br>
         <input type="submit" value="Login">
     </form>
+
     <form method="get" action="{% url 'logout' %}">
         <input type="submit" value="Logout">
     </form>
+
     <form  action="{% url 'signup' %}">
         <input type="submit" value="Signup">
     </form>
