@@ -1,6 +1,22 @@
 from django.db import models
 
 # Create your models here.
+class Item(models.Model):
+    name = models.CharField(max_length=64)
+    size = models.CharField(max_length=64,blank=True)
+    sort = models.CharField(max_length=64,blank=True)    
+    topping_1 = models.CharField(max_length=64,blank=True)
+    topping_2 = models.CharField(max_length=64,blank=True)
+    topping_3 = models.CharField(max_length=64,blank=True)
+    topping_4 = models.CharField(max_length=64,blank=True)
+    extra_cheese = models.BooleanField(default=False)
+    price = models.FloatField( default=0, blank=True)
+
+    def __str__(self):
+        return f"{self.name}, {self.size}, {self.sort} - {self.price}$"
+
+
+
 class Pizza(models.Model):
     PIZZA_SORT = (
         ('Regular Pizza','Regular Pizza'),

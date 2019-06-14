@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 from orders.forms import UserCreationForm
-from orders.models import Pizza, Subs, Pasta, Salads, Dinner_Platters
+from orders.models import Pizza, Subs, Pasta, Salads, Dinner_Platters, Item
 
 # Create your views here.
 def index(request):
@@ -33,6 +33,7 @@ def login_view(request):
                 "pasta": Pasta.objects.all(),
                 "salads": Salads.objects.all(),
                 "dinner_platters": Dinner_Platters.objects.all(),
+                "items": Item.objects.all(),
             }
             return render(request, "menu.html", context)
         else:
@@ -63,6 +64,7 @@ def menu_view(request):
         "pasta": Pasta.objects.all(),
         "salads": Salads.objects.all(),
         "dinner_platters": Dinner_Platters.objects.all(),
+        "items": Item.objects.all(),
     }
     if request.method == "POST":
         try:
