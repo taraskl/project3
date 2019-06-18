@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block body %}
+	<p>Hello {{ username }}!</p>
+	{% if object %}
+    <table width="60%" border=1 class="foodmenu">
+      <caption><b><a name="">Your cart</a></b></caption>
+        <tr>
+        	<td width="30%"><b>Item</b></td>
+            <td width="30%"><b>Sort</b></td>
+            <td width="20%"><b>Size</b></td>
+            <td width="20%"><b>Price</b></td>
+        </tr>
+        {% for item in object.items.all %}
+        <tr>
+          <td width="30%">{{ item.item.name }}</td>
+          <td width="30%">
+          	{{ item.item.sort }}
+          	{% if item.topping_1 %}
+          		{{ item.topping_1 }}
+          	{% endif %}
+          	{% if item.topping_2 %}
+          		{{ item.topping_2 }}
+          	{% endif %}
+          	{% if item.topping_3 %}
+          		{{ item.topping_3 }}
+          	{% endif %}
+          	{% if item.topping_4 %}
+          		{{ item.topping_4 }}
+          	{% endif %}
+          </td>
+          <td width="20%">{{ item.item.size }}</td>
+          <td width="20%">{{ item.item.price }}$</td>
+        </tr>
+        {% endfor %}
+    </table> 
+    <p><b> Totat: {{ object.get_total }}$</b></p>
+    <form method="post" action="{% url 'success' %}">
+    {% csrf_token %}
+	    <input type="hidden" name="order_id" value="{{ object.id }}">
+	    <input type="submit" value="Order">
+    </form>    
+    {% else %}  
+    	<h4>Your cart is empty</h4>
+   	{% endif %} 	 
+
+{% endblock %}

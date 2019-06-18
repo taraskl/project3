@@ -1,23 +1,16 @@
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.utils import timezone
 
 from django import forms
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 
 from orders.forms import UserCreationForm
-from orders.models import Pizza, Subs, Pasta, Salads, Dinner_Platters, Item
+from orders.models import Item, Order, OrderItem
 
 # Create your views here.
 def index(request):
-    # user = authenticate(username='john', password='secret')
-    # if user is not None:
-    #     pass
-    # else:
-    #     pass
-    # context = {
-    #     "users": User.objects.all()
-    # }
     return render(request, "index.html")
 
 def login_view(request):
@@ -28,12 +21,8 @@ def login_view(request):
         if user is not None:
             login(request, user)
             context = {
-                "pizza": Pizza.objects.all(),
-                "subs": Subs.objects.all(),
-                "pasta": Pasta.objects.all(),
-                "salads": Salads.objects.all(),
-                "dinner_platters": Dinner_Platters.objects.all(),
                 "items": Item.objects.all(),
+                "username": username,
             }
             return render(request, "menu.html", context)
         else:
@@ -57,25 +46,85 @@ def signup_view(request):
 
     return render(request, "signup.html", { "form":form }) 
 
+
 def menu_view(request):
     context = {
-        "pizza": Pizza.objects.all(),
-        "subs": Subs.objects.all(),
-        "pasta": Pasta.objects.all(),
-        "salads": Salads.objects.all(),
-        "dinner_platters": Dinner_Platters.objects.all(),
         "items": Item.objects.all(),
+        "username": request.user,
     }
     if request.method == "POST":
-        try:
-            regular_pizza_small = request.POST['regular_pizza_small']
-            regular_pizza_large = request.POST['regular_pizza_large']
-        except:
-            pass    
-        topping_1 = request.POST['topping_1']
-        print(regular_pizza_small)
+        item_id = request.POST['id']
+        item = Item.objects.get(id=item_id)
+        order_item, created = OrderItem.objects.get_or_create(
+            item=item,
+            user=request.user,
+            ordered=False
+        )
+        #add toppings to order item
+        if item.sort in ['1 topping', '2 toppings', '3 toppings', 'Special']:
+            topping_1 = request.POST['topping_1']
+            order_item.topping_1 = topping_1
+            order_item.save()
+        if item.sort in ['2 toppings', '3 toppings', 'Special']:
+            topping_2 = request.POST['topping_2']
+            order_item.topping_2 = topping_2
+            order_item.save()
+        if item.sort in ['3 toppings', 'Special']:
+            topping_3 = request.POST['topping_3']
+            order_item.topping_3 = topping_3
+            order_item.save()    
+        if item.sort in ['Special']:
+            topping_4 = request.POST['topping_4']
+            order_item.topping_4 = topping_4
+            order_item.save()  
 
+        order_qs = Order.objects.filter(user=request.user, ordered=False)
+        if order_qs.exists():
+            order = order_qs[0]
+            order.items.add(order_item)
+            order.save()
+        else:
+            order = Order.objects.create(
+                user=request.user)
+            order.items.add(order_item)
+            order.save()
         return render(request, "menu.html", context)
 
     return render(request, "menu.html", context) 
 
+def cart_view(request):
+    try:
+        order = Order.objects.get(user=request.user, ordered=False)
+        context = {
+            'object': order,
+            "username": request.user,
+        }
+        return render(request, 'cart.html', context)
+    except:
+        context = {
+            "username": request.user,
+        }
+        return render(request, "cart.html",context)
+
+def success_view(request):
+    order_id = request.POST['order_id']
+    order = Order.objects.get(id=order_id)
+    order.ordered = True
+    order.save()
+    return render(request, "success.html")       
+
+def orders_view(request):
+    try:
+        orders = Order.objects.filter(user=request.user, ordered=True)
+        context = {
+            'orders': orders,
+            "username": request.user,
+        }
+        print(type(orders))
+        return render(request, 'orders.html', context)
+    except:
+        context = {
+            "username": request.user,
+        }
+        print("Noooo")
+        return render(request, "orders.html",context)

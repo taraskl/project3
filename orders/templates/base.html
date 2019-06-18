@@ -20,14 +20,13 @@
   </tbody>
 </table>
 </div>
-<div id="menu">
-  <ul>
-    <li><a href="{% url 'index' %}" id="">Home</a></li>
-    <li><a href="{% url 'menu' %}" id="youarehere">Menu</a></li>
-    <li><a href="directions.html" id="">Directions</a></li>
-    <li><a href="hours.html"  id="">Hours</a></li>
-  </ul>
-</div>
+    <div class="menu">
+      <a href="{% url 'index' %}">Home</a> 
+      <a href="{% url 'menu' %}">Menu</a> 
+      <a href="{% url 'cart' %}">Cart</a> 
+      <a href="">Contacts</a> 
+      <a href="{% url 'orders' %}">My orders</a> 
+    </div>
 {% block body %}
 {% endblock %}
 </body>

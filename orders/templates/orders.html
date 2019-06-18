@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block body %}
+	<p>Hello {{ username }}!</p>
+	{% if orders %}
+    <table width="60%" border=1 class="foodmenu">
+      <caption><b><a name="">Your orders:</a></b></caption>
+        <tr>
+        	<td width="30%"><b>Order</b></td>
+            <td width="30%"><b>Price</b></td>
+            <td width="30%"><b>Status</b></td>
+        </tr>
+        {% for order in orders %}
+        <tr>
+          <td width="30%">
+            {{ order }}
+          </td>
+          <td width="30%">
+          	{{ order.get_total }}$
+          </td>
+          <td width="30%">
+            {%  if order.confirmed %}
+            Completed
+            {% else %}
+            Pending
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+    </table> 
+    {% else %}  
+    	<h4>No orders yet.</h4>
+   	{% endif %} 
+
+
+{% endblock %}
